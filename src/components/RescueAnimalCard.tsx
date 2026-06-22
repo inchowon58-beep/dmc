@@ -45,6 +45,7 @@ export default function RescueAnimalCard({ item }: RescueAnimalCardProps) {
                 alt={`${kindLabel} 구조동물`}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 loading="lazy"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-slate-400">

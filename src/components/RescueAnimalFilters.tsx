@@ -24,6 +24,8 @@ export default function RescueAnimalFilters() {
         params.set(key, value);
       }
 
+      params.delete("page");
+
       startTransition(() => {
         router.push(`?${params.toString()}`, { scroll: false });
       });

@@ -1,8 +1,11 @@
+import { cache } from "react";
 import type {
   AnimalApiResponse,
   RescueAnimalFilters,
   RescueAnimalItem,
 } from "@/types/animal";
+import { cachedFetch } from "@/lib/cache";
+import { RESCUE_PAGE_SIZE } from "@/lib/pagination";
 
 const BASE_URL =
   "https://apis.data.go.kr/1543061/abandonmentPublicService_v2";
@@ -54,7 +57,7 @@ async function fetchAnimalApi<T>(
   }
 
   const url = `${BASE_URL}/${path}?${searchParams.toString()}`;
-  const res = await fetch(url, { next: { revalidate: 1800 } });
+  const res = await cachedFetch(url, 1800);
 
   if (res.status === 403) {
     throw new Error(
@@ -76,13 +79,13 @@ async function fetchAnimalApi<T>(
   return data;
 }
 
-export async function fetchRescueAnimals(
+export const fetchRescueAnimals = cache(async (
   filters: RescueAnimalFilters = {},
-): Promise<{ items: RescueAnimalItem[]; totalCount: number }> {
+): Promise<{ items: RescueAnimalItem[]; totalCount: number }> => {
   const { bgnde, endde } = getDateRange(60);
 
   const data = await fetchAnimalApi<RescueAnimalItem>("abandonmentPublic_v2", {
-    numOfRows: filters.numOfRows ?? 8,
+    numOfRows: filters.numOfRows ?? RESCUE_PAGE_SIZE,
     pageNo: filters.pageNo ?? 1,
     bgnde,
     endde,
@@ -95,11 +98,11 @@ export async function fetchRescueAnimals(
     items: unwrapItems(data.response.body.items),
     totalCount: data.response.body.totalCount ?? 0,
   };
-}
+});
 
-export async function fetchRescueAnimalDetail(
+export const fetchRescueAnimalDetail = cache(async (
   desertionNo: string,
-): Promise<RescueAnimalItem | null> {
+): Promise<RescueAnimalItem | null> => {
   try {
     const { bgnde, endde } = getDateRange(365);
 
@@ -119,7 +122,7 @@ export async function fetchRescueAnimalDetail(
   } catch {
     return null;
   }
-}
+});
 
 export async function fetchRescueAnimalsForSitemap(
   maxItems = 500,

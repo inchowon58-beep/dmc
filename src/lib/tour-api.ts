@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type {
   AreaCode,
   CategoryCode,
@@ -7,6 +8,10 @@ import type {
   PetTourPetDetail,
   TourApiResponse,
 } from "@/types/tour";
+import {
+  cachedFetch,
+  STATIC_DATA_REVALIDATE_SECONDS,
+} from "@/lib/cache";
 
 const BASE_URL = "https://apis.data.go.kr/B551011/KorPetTourService2";
 
@@ -52,7 +57,11 @@ async function fetchTourApi<T>(
   }
 
   const url = `${BASE_URL}/${path}?${searchParams.toString()}`;
-  const res = await fetch(url, { next: { revalidate: 3600 } });
+  const revalidate =
+    path === "areaCode2" || path === "categoryCode2"
+      ? STATIC_DATA_REVALIDATE_SECONDS
+      : 1800;
+  const res = await cachedFetch(url, revalidate);
 
   if (!res.ok) {
     throw new Error(`API 요청 실패: ${res.status} ${res.statusText}`);
@@ -68,25 +77,25 @@ async function fetchTourApi<T>(
   return data;
 }
 
-export async function fetchAreaCodes(): Promise<AreaCode[]> {
+export const fetchAreaCodes = cache(async (): Promise<AreaCode[]> => {
   const data = await fetchTourApi<AreaCode>("areaCode2", {
     numOfRows: 50,
     pageNo: 1,
   });
   return unwrapItems(data.response.body.items);
-}
+});
 
-export async function fetchCategoryCodes(): Promise<CategoryCode[]> {
+export const fetchCategoryCodes = cache(async (): Promise<CategoryCode[]> => {
   const data = await fetchTourApi<CategoryCode>("categoryCode2", {
     numOfRows: 50,
     pageNo: 1,
   });
   return unwrapItems(data.response.body.items);
-}
+});
 
-export async function fetchPetTours(
+export const fetchPetTours = cache(async (
   filters: PetTourFilters = {},
-): Promise<{ items: PetTourItem[]; totalCount: number }> {
+): Promise<{ items: PetTourItem[]; totalCount: number }> => {
   const data = await fetchTourApi<PetTourItem>("areaBasedList2", {
     numOfRows: filters.numOfRows ?? 12,
     pageNo: filters.pageNo ?? 1,
@@ -99,11 +108,11 @@ export async function fetchPetTours(
     items: unwrapItems(data.response.body.items),
     totalCount: data.response.body.totalCount ?? 0,
   };
-}
+});
 
-export async function fetchPetTourDetail(
+export const fetchPetTourDetail = cache(async (
   contentId: string,
-): Promise<{ common: PetTourDetail; pet?: PetTourPetDetail } | null> {
+): Promise<{ common: PetTourDetail; pet?: PetTourPetDetail } | null> => {
   try {
     const [commonData, petData] = await Promise.all([
       fetchTourApi<PetTourDetail>("detailCommon2", {
@@ -128,7 +137,7 @@ export async function fetchPetTourDetail(
   } catch {
     return null;
   }
-}
+});
 
 export async function fetchPetTourItemsForSitemap(
   maxItems = 500,

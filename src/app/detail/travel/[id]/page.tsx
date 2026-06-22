@@ -86,8 +86,8 @@ export default async function TravelDetailPage({
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <Link href="/#travel" className="hover:text-indigo-600">
-                동반 여행
+              <Link href="/?tab=travel" className="hover:text-indigo-600">
+                반려동물동반시설
               </Link>
             </li>
             <li aria-hidden="true">/</li>

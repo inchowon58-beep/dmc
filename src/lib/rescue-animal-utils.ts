@@ -15,14 +15,12 @@ export function getRescueAnimalImageUrl(
   return getRescueAnimalImageUrls(item)[0];
 }
 
-/** HTTPS 사이트 mixed-content 방지 + 핫링크 이슈 대비 서버 프록시 경로 */
+/** 브라우저에서 직접 로드 (이미지 프록시보다 빠름) */
 export function getRescueAnimalImageSrc(
   item: RescueAnimalItem,
   index = 0,
 ): string | undefined {
-  const url = getRescueAnimalImageUrls(item)[index];
-  if (!url) return undefined;
-  return `/api/animal-image?url=${encodeURIComponent(url)}`;
+  return getRescueAnimalImageUrls(item)[index];
 }
 
 export function getRescueAnimalKindLabel(item: RescueAnimalItem): string {

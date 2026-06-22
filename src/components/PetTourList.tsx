@@ -1,12 +1,22 @@
 import type { PetTourItem } from "@/types/tour";
+import ListPagination from "./ListPagination";
 import PetTourCard from "./PetTourCard";
 
 interface PetTourListProps {
   items: PetTourItem[];
   totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  searchParams: Record<string, string | undefined>;
 }
 
-export default function PetTourList({ items, totalCount }: PetTourListProps) {
+export default function PetTourList({
+  items,
+  totalCount,
+  currentPage,
+  pageSize,
+  searchParams,
+}: PetTourListProps) {
   if (items.length === 0) {
     return (
       <section aria-labelledby="tour-empty-heading">
@@ -33,11 +43,18 @@ export default function PetTourList({ items, totalCount }: PetTourListProps) {
       <p className="mb-4 text-sm text-slate-500">
         총 <span className="font-medium text-slate-700">{totalCount}</span>곳
       </p>
-      <ul className="grid list-none gap-4 p-0 sm:grid-cols-2">
+      <ul className="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <PetTourCard key={item.contentid} item={item} />
         ))}
       </ul>
+      <ListPagination
+        currentPage={currentPage}
+        totalCount={totalCount}
+        pageSize={pageSize}
+        searchParams={searchParams}
+        accent="indigo"
+      />
     </section>
   );
 }

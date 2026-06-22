@@ -99,8 +99,8 @@ export default async function RescueDetailPage({
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <Link href="/#rescue" className="hover:text-emerald-600">
-                구조동물
+              <Link href="/" className="hover:text-emerald-600">
+                유기동물보호센터
               </Link>
             </li>
             <li aria-hidden="true">/</li>

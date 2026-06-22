@@ -24,6 +24,7 @@ export default function PetTourFilters({
   const updateFilter = useCallback(
     (key: "area" | "cat", value: string) => {
       const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", "travel");
       const current = params.get(key) ?? "";
 
       if (value === "" || value === current) {
@@ -31,6 +32,8 @@ export default function PetTourFilters({
       } else {
         params.set(key, value);
       }
+
+      params.delete("page");
 
       startTransition(() => {
         router.push(`?${params.toString()}`, { scroll: false });

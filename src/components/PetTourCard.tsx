@@ -35,6 +35,7 @@ export default function PetTourCard({ item }: PetTourCardProps) {
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                loading="lazy"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-slate-400">
