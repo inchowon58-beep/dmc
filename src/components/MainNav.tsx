@@ -10,7 +10,7 @@ const NAV_ITEMS: { tab: MainTab; label: string }[] = [
   { tab: "travel", label: "반려동물동반시설" },
 ];
 
-function buildTabHref(tab: MainTab, searchParams: URLSearchParams): string {
+function buildTabHref(tab: MainTab, searchParams: URLSearchParams | Readonly<URLSearchParams>): string {
   const params = new URLSearchParams();
 
   if (tab === "travel") {
@@ -32,7 +32,8 @@ function buildTabHref(tab: MainTab, searchParams: URLSearchParams): string {
 
 export default function MainNav() {
   const searchParams = useSearchParams();
-  const activeTab = parseMainTab(searchParams.get("tab"));
+  const sp = searchParams ?? new URLSearchParams();
+  const activeTab = parseMainTab(sp.get("tab"));
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm">
@@ -49,7 +50,7 @@ export default function MainNav() {
         >
           {NAV_ITEMS.map(({ tab, label }) => {
             const isActive = activeTab === tab;
-            const href = buildTabHref(tab, searchParams);
+            const href = buildTabHref(tab, sp);
 
             return (
               <Link
